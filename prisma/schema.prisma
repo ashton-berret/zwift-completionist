@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions       Session[]
+  completedRides CompletedRide[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Route {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  world           String
+  distanceKm      Float
+  distanceMi      Float
+  elevationM      Float
+  elevationFt     Float
+  leadInKm        Float    @default(0)
+  leadInMi        Float    @default(0)
+  badgeXp         Int      @default(0)
+  difficulty      String
+  difficultyScore Int      @default(1)
+  eventOnly       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  completedRides CompletedRide[]
+}
+
+model CompletedRide {
+  id                  String   @id @default(cuid())
+  userId              String
+  routeId             String
+  rideDate            DateTime
+  rideTimeMinutes     Int?
+  avgPowerWatts       Int?
+  avgHeartRate        Int?
+  perceivedDifficulty Int?
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([routeId])
+  @@index([userId, rideDate])
+}
+
+model ImportHistory {
+  id            String       @id @default(cuid())
+  fileName      String
+  routeCount    Int
+  newRoutes     Int
+  updatedRoutes Int
+  status        ImportStatus
+  errors        String?
+  importedAt    DateTime     @default(now())
+}
+
+enum ImportStatus {
+  SUCCESS
+  PARTIAL
+  FAILED
+}
