@@ -31,11 +31,19 @@
   let notes = "";
   let submitting = false;
 
+  function toLocalDateInputValue(dateInput: Date): string {
+    const date = new Date(dateInput);
+    const yyyy = date.getFullYear();
+    const mm = `${date.getMonth() + 1}`.padStart(2, "0");
+    const dd = `${date.getDate()}`.padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   $: if (open && route) {
     const existingRide = mode === "edit" ? route.latestRide : null;
     rideDate = existingRide
-      ? new Date(existingRide.rideDate).toISOString().slice(0, 10)
-      : new Date().toISOString().slice(0, 10);
+      ? toLocalDateInputValue(new Date(existingRide.rideDate))
+      : toLocalDateInputValue(new Date());
     rideTimeMinutes = existingRide?.rideTimeMinutes?.toString() ?? "";
     avgPowerWatts = existingRide?.avgPowerWatts?.toString() ?? "";
     avgHeartRate = existingRide?.avgHeartRate?.toString() ?? "";

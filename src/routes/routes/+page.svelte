@@ -2,6 +2,7 @@
   import type { ActionData, PageData } from "./$types";
   import RouteCard from "$lib/components/routes/RouteCard.svelte";
   import RideModal from "$lib/components/routes/RideModal.svelte";
+  import RouteMetricsModal from "$lib/components/routes/RouteMetricsModal.svelte";
   import RouteFilters from "$lib/components/routes/RouteFilters.svelte";
 
   export let data: PageData;
@@ -16,6 +17,8 @@
   let modalOpen = false;
   let modalMode: "create" | "edit" = "create";
   let selectedRoute: PageData["routes"][number] | null = null;
+  let metricsModalOpen = false;
+  let selectedMetricsRoute: PageData["routes"][number] | null = null;
 
   $: worlds = Array.from(new Set(data.routes.map((route) => route.world))).sort((a, b) =>
     a.localeCompare(b),
@@ -74,6 +77,17 @@
   function closeModal() {
     modalOpen = false;
   }
+
+  function openMetricsModal(routeId: string) {
+    const route = data.routes.find((item) => item.id === routeId);
+    if (!route) return;
+    selectedMetricsRoute = route;
+    metricsModalOpen = true;
+  }
+
+  function closeMetricsModal() {
+    metricsModalOpen = false;
+  }
 </script>
 
 <svelte:head>
@@ -128,6 +142,7 @@
           {route}
           on:openLog={(event) => openCreateModal(event.detail.routeId)}
           on:openEdit={(event) => openEditModal(event.detail.routeId)}
+          on:openMetrics={(event) => openMetricsModal(event.detail.routeId)}
         />
       {/each}
     </div>
@@ -135,3 +150,4 @@
 </div>
 
 <RideModal open={modalOpen} route={selectedRoute} mode={modalMode} onClose={closeModal} />
+<RouteMetricsModal open={metricsModalOpen} route={selectedMetricsRoute} onClose={closeMetricsModal} />

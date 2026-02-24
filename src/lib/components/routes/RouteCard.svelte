@@ -30,6 +30,7 @@
   const dispatch = createEventDispatcher<{
     openLog: { routeId: string };
     openEdit: { routeId: string };
+    openMetrics: { routeId: string };
   }>();
 </script>
 
@@ -59,6 +60,14 @@
     </div>
 
     <div class="flex min-w-[220px] flex-wrap items-center justify-end gap-2">
+      <button
+        type="button"
+        class="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+        on:click={() => dispatch("openMetrics", { routeId: route.id })}
+      >
+        Adjust Route
+      </button>
+
       {#if route.completed}
         <button
           type="button"

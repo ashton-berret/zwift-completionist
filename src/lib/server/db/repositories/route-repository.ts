@@ -76,9 +76,28 @@ function findAllRoutes() {
   });
 }
 
+function updateMetrics(input: {
+  routeId: string;
+  distanceKm: number;
+  distanceMi: number;
+  elevationM: number;
+  elevationFt: number;
+}) {
+  return prisma.route.update({
+    where: { id: input.routeId },
+    data: {
+      distanceKm: input.distanceKm,
+      distanceMi: input.distanceMi,
+      elevationM: input.elevationM,
+      elevationFt: input.elevationFt,
+    },
+  });
+}
+
 export const routeRepository = {
   upsertMany,
   createImportHistory,
   getImportHistory,
   findAllRoutes,
+  updateMetrics,
 };
